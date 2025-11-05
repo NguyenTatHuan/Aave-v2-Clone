@@ -18,10 +18,11 @@ interface ILendingPoolAddressesProvider {
     function getMarketId() external view returns (string memory);
     function setMarketId(string calldata marketId) external;
     function setAddress(bytes32 id, address newAddress) external;
-    function setAddressAsProxy(bytes32 id, address newAddress) external;
+    function setAddressAsProxy(bytes32 id, address impl) external;
     function getAddress(bytes32 id) external view returns (address);
     function getLendingPool() external view returns (address);
     function setLendingPoolImpl(address pool) external;
+    function getLendingPoolConfigurator() external view returns (address);
     function setLendingPoolConfiguratorImpl(address configurator) external;
     function getLendingPoolCollateralManager() external view returns (address);
     function setLendingPoolCollateralManager(address manager) external;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../helpers/Errors.sol";
+import "../helpers/AaveErrors.sol";
 
 library WadRayMath {
     uint256 internal constant WAD = 1e18;
@@ -35,19 +35,19 @@ library WadRayMath {
 
         require(
             a <= (type(uint256).max - halfWAD) / b,
-            Errors.MATH_MULTIPLICATION_OVERFLOW
+            AaveErrors.MATH_MULTIPLICATION_OVERFLOW
         );
 
         return (a * b + halfWAD) / WAD;
     }
 
     function wadDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b != 0, Errors.MATH_DIVISION_BY_ZERO);
+        require(b != 0, AaveErrors.MATH_DIVISION_BY_ZERO);
         uint256 halfB = b / 2;
 
         require(
             a <= (type(uint256).max - halfB) / WAD,
-            Errors.MATH_MULTIPLICATION_OVERFLOW
+            AaveErrors.MATH_MULTIPLICATION_OVERFLOW
         );
 
         return (a * WAD + halfB) / b;
@@ -60,19 +60,19 @@ library WadRayMath {
 
         require(
             a <= (type(uint256).max - halfRAY) / b,
-            Errors.MATH_MULTIPLICATION_OVERFLOW
+            AaveErrors.MATH_MULTIPLICATION_OVERFLOW
         );
 
         return (a * b + halfRAY) / RAY;
     }
 
     function rayDiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b != 0, Errors.MATH_DIVISION_BY_ZERO);
+        require(b != 0, AaveErrors.MATH_DIVISION_BY_ZERO);
         uint256 halfB = b / 2;
 
         require(
             a <= (type(uint256).max - halfB) / RAY,
-            Errors.MATH_MULTIPLICATION_OVERFLOW
+            AaveErrors.MATH_MULTIPLICATION_OVERFLOW
         );
 
         return (a * RAY + halfB) / b;
@@ -81,7 +81,7 @@ library WadRayMath {
     function rayToWad(uint256 a) internal pure returns (uint256) {
         uint256 halfRatio = WAD_RAY_RATIO / 2;
         uint256 result = halfRatio + a;
-        require(result >= halfRatio, Errors.MATH_ADDITION_OVERFLOW);
+        require(result >= halfRatio, AaveErrors.MATH_ADDITION_OVERFLOW);
 
         return result / WAD_RAY_RATIO;
     }
@@ -90,7 +90,7 @@ library WadRayMath {
         uint256 result = a * WAD_RAY_RATIO;
         require(
             result / WAD_RAY_RATIO == a,
-            Errors.MATH_MULTIPLICATION_OVERFLOW
+            AaveErrors.MATH_MULTIPLICATION_OVERFLOW
         );
         return result;
     }
