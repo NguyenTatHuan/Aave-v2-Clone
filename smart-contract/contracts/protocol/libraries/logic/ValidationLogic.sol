@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../../../openzeppelin/contracts/SafeMath.sol";
+import "../../../openzeppelin/contracts/IERC20.sol";
+import "../../../openzeppelin/contracts/SafeERC20.sol";
 import "./ReserveLogic.sol";
 import "./GenericLogic.sol";
 import "../math/WadRayMath.sol";
 import "../math/PercentageMath.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../configuration/ReserveConfiguration.sol";
 import "../configuration/UserConfiguration.sol";
-import "../helpers/AaveErrors.sol";
+import "../helpers/Errors.sol";
 import "../helpers/Helpers.sol";
 import "../types/DataTypes.sol";
 import "../../../interfaces/IReserveInterestRateStrategy.sol";
@@ -32,9 +32,9 @@ library ValidationLogic {
         uint256 amount
     ) external view {
         (bool isActive, bool isFrozen, , ) = reserve.configuration.getFlags();
-        require(amount != 0, AaveErrors.VL_INVALID_AMOUNT);
-        require(isActive, AaveErrors.VL_NO_ACTIVE_RESERVE);
-        require(!isFrozen, AaveErrors.VL_RESERVE_FROZEN);
+        require(amount != 0, Errors.VL_INVALID_AMOUNT);
+        require(isActive, Errors.VL_NO_ACTIVE_RESERVE);
+        require(!isFrozen, Errors.VL_RESERVE_FROZEN);
     }
 
     function validateWithdraw(
@@ -51,14 +51,14 @@ library ValidationLogic {
             .configuration
             .getFlags();
 
-        require(amount != 0, AaveErrors.VL_INVALID_AMOUNT);
+        require(amount != 0, Errors.VL_INVALID_AMOUNT);
 
         require(
             amount <= userBalance,
-            AaveErrors.VL_NOT_ENOUGH_AVAILABLE_USER_BALANCE
+            Errors.VL_NOT_ENOUGH_AVAILABLE_USER_BALANCE
         );
 
-        require(isActive, AaveErrors.VL_NO_ACTIVE_RESERVE);
+        require(isActive, Errors.VL_NO_ACTIVE_RESERVE);
 
         require(
             GenericLogic.balanceDecreaseAllowed(
@@ -71,7 +71,7 @@ library ValidationLogic {
                 reservesCount,
                 oracle
             ),
-            AaveErrors.VL_TRANSFER_NOT_ALLOWED
+            Errors.VL_TRANSFER_NOT_ALLOWED
         );
     }
 
@@ -112,14 +112,14 @@ library ValidationLogic {
             vars.stableRateBorrowingEnabled
         ) = reserve.configuration.getFlags();
 
-        require(vars.isActive, AaveErrors.VL_NO_ACTIVE_RESERVE);
-        require(!vars.isFrozen, AaveErrors.VL_RESERVE_FROZEN);
-        require(amount != 0, AaveErrors.VL_INVALID_AMOUNT);
-        require(vars.borrowingEnabled, AaveErrors.VL_BORROWING_NOT_ENABLED);
+        require(vars.isActive, Errors.VL_NO_ACTIVE_RESERVE);
+        require(!vars.isFrozen, Errors.VL_RESERVE_FROZEN);
+        require(amount != 0, Errors.VL_INVALID_AMOUNT);
+        require(vars.borrowingEnabled, Errors.VL_BORROWING_NOT_ENABLED);
         require(
             uint256(DataTypes.InterestRateMode.VARIABLE) == interestRateMode ||
                 uint256(DataTypes.InterestRateMode.STABLE) == interestRateMode,
-            AaveErrors.VL_INVALID_INTEREST_RATE_MODE_SELECTED
+            Errors.VL_INVALID_INTEREST_RATE_MODE_SELECTED
         );
 
         (
@@ -139,13 +139,13 @@ library ValidationLogic {
 
         require(
             vars.userCollateralBalanceETH > 0,
-            AaveErrors.VL_COLLATERAL_BALANCE_IS_0
+            Errors.VL_COLLATERAL_BALANCE_IS_0
         );
 
         require(
             vars.healthFactor >
                 GenericLogic.HEALTH_FACTOR_LIQUIDATION_THRESHOLD,
-            AaveErrors.VL_HEALTH_FACTOR_LOWER_THAN_LIQUIDATION_THRESHOLD
+            Errors.VL_HEALTH_FACTOR_LOWER_THAN_LIQUIDATION_THRESHOLD
         );
 
         vars.amountOfCollateralNeededETH = vars
@@ -155,13 +155,13 @@ library ValidationLogic {
 
         require(
             vars.amountOfCollateralNeededETH <= vars.userCollateralBalanceETH,
-            AaveErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW
+            Errors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW
         );
 
         if (interestRateMode == uint256(DataTypes.InterestRateMode.STABLE)) {
             require(
                 vars.stableRateBorrowingEnabled,
-                AaveErrors.VL_STABLE_BORROWING_NOT_ENABLED
+                Errors.VL_STABLE_BORROWING_NOT_ENABLED
             );
 
             require(
@@ -169,7 +169,7 @@ library ValidationLogic {
                     reserve.configuration.getLtv() == 0 ||
                     amount >
                     IERC20(reserve.aTokenAddress).balanceOf(userAddress),
-                AaveErrors.VL_COLLATERAL_SAME_AS_BORROWING_CURRENCY
+                Errors.VL_COLLATERAL_SAME_AS_BORROWING_CURRENCY
             );
 
             vars.availableLiquidity = IERC20(asset).balanceOf(
@@ -182,7 +182,7 @@ library ValidationLogic {
 
             require(
                 amount <= maxLoanSizeStable,
-                AaveErrors.VL_AMOUNT_BIGGER_THAN_MAX_LOAN_SIZE_STABLE
+                Errors.VL_AMOUNT_BIGGER_THAN_MAX_LOAN_SIZE_STABLE
             );
         }
     }
@@ -197,8 +197,8 @@ library ValidationLogic {
     ) external view {
         bool isActive = reserve.configuration.getActive();
 
-        require(isActive, AaveErrors.VL_NO_ACTIVE_RESERVE);
-        require(amountSent > 0, AaveErrors.VL_INVALID_AMOUNT);
+        require(isActive, Errors.VL_NO_ACTIVE_RESERVE);
+        require(amountSent > 0, Errors.VL_INVALID_AMOUNT);
 
         require(
             (stableDebt > 0 &&
@@ -207,12 +207,12 @@ library ValidationLogic {
                 (variableDebt > 0 &&
                     DataTypes.InterestRateMode(rateMode) ==
                     DataTypes.InterestRateMode.VARIABLE),
-            AaveErrors.VL_NO_DEBT_OF_SELECTED_TYPE
+            Errors.VL_NO_DEBT_OF_SELECTED_TYPE
         );
 
         require(
             amountSent != type(uint256).max || msg.sender == onBehalfOf,
-            AaveErrors.VL_NO_EXPLICIT_AMOUNT_TO_REPAY_ON_BEHALF
+            Errors.VL_NO_EXPLICIT_AMOUNT_TO_REPAY_ON_BEHALF
         );
     }
 
@@ -227,23 +227,23 @@ library ValidationLogic {
             .configuration
             .getFlags();
 
-        require(isActive, AaveErrors.VL_NO_ACTIVE_RESERVE);
-        require(!isFrozen, AaveErrors.VL_RESERVE_FROZEN);
+        require(isActive, Errors.VL_NO_ACTIVE_RESERVE);
+        require(!isFrozen, Errors.VL_RESERVE_FROZEN);
 
         if (currentRateMode == DataTypes.InterestRateMode.STABLE) {
             require(
                 stableDebt > 0,
-                AaveErrors.VL_NO_STABLE_RATE_LOAN_IN_RESERVE
+                Errors.VL_NO_STABLE_RATE_LOAN_IN_RESERVE
             );
         } else if (currentRateMode == DataTypes.InterestRateMode.VARIABLE) {
             require(
                 variableDebt > 0,
-                AaveErrors.VL_NO_VARIABLE_RATE_LOAN_IN_RESERVE
+                Errors.VL_NO_VARIABLE_RATE_LOAN_IN_RESERVE
             );
 
             require(
                 stableRateEnabled,
-                AaveErrors.VL_STABLE_BORROWING_NOT_ENABLED
+                Errors.VL_STABLE_BORROWING_NOT_ENABLED
             );
 
             require(
@@ -251,10 +251,10 @@ library ValidationLogic {
                     reserve.configuration.getLtv() == 0 ||
                     stableDebt.add(variableDebt) >
                     IERC20(reserve.aTokenAddress).balanceOf(msg.sender),
-                AaveErrors.VL_COLLATERAL_SAME_AS_BORROWING_CURRENCY
+                Errors.VL_COLLATERAL_SAME_AS_BORROWING_CURRENCY
             );
         } else {
-            revert(AaveErrors.VL_INVALID_INTEREST_RATE_MODE_SELECTED);
+            revert(Errors.VL_INVALID_INTEREST_RATE_MODE_SELECTED);
         }
     }
 
@@ -267,7 +267,7 @@ library ValidationLogic {
     ) external view {
         (bool isActive, , , ) = reserve.configuration.getFlags();
 
-        require(isActive, AaveErrors.VL_NO_ACTIVE_RESERVE);
+        require(isActive, Errors.VL_NO_ACTIVE_RESERVE);
 
         uint256 totalDebt = stableDebtToken
             .totalSupply()
@@ -294,7 +294,7 @@ library ValidationLogic {
                 maxVariableBorrowRate.percentMul(
                     REBALANCE_UP_LIQUIDITY_RATE_THRESHOLD
                 ),
-            AaveErrors.LP_INTEREST_RATE_REBALANCE_CONDITIONS_NOT_MET
+            Errors.LP_INTEREST_RATE_REBALANCE_CONDITIONS_NOT_MET
         );
     }
 
@@ -314,7 +314,7 @@ library ValidationLogic {
 
         require(
             underlyingBalance > 0,
-            AaveErrors.VL_UNDERLYING_BALANCE_NOT_GREATER_THAN_0
+            Errors.VL_UNDERLYING_BALANCE_NOT_GREATER_THAN_0
         );
 
         require(
@@ -329,7 +329,7 @@ library ValidationLogic {
                     reservesCount,
                     oracle
                 ),
-            AaveErrors.VL_DEPOSIT_ALREADY_IN_USE
+            Errors.VL_DEPOSIT_ALREADY_IN_USE
         );
     }
 
@@ -339,7 +339,7 @@ library ValidationLogic {
     ) internal pure {
         require(
             assets.length == amounts.length,
-            AaveErrors.VL_INCONSISTENT_FLASHLOAN_PARAMS
+            Errors.VL_INCONSISTENT_FLASHLOAN_PARAMS
         );
     }
 
@@ -356,8 +356,8 @@ library ValidationLogic {
             !principalReserve.configuration.getActive()
         ) {
             return (
-                uint256(AaveErrors.CollateralManagerErrors.NO_ACTIVE_RESERVE),
-                AaveErrors.VL_NO_ACTIVE_RESERVE
+                uint256(Errors.CollateralManagerErrors.NO_ACTIVE_RESERVE),
+                Errors.VL_NO_ACTIVE_RESERVE
             );
         }
 
@@ -366,11 +366,11 @@ library ValidationLogic {
         ) {
             return (
                 uint256(
-                    AaveErrors
+                    Errors
                         .CollateralManagerErrors
                         .HEALTH_FACTOR_ABOVE_THRESHOLD
                 ),
-                AaveErrors.LPCM_HEALTH_FACTOR_NOT_BELOW_THRESHOLD
+                Errors.LPCM_HEALTH_FACTOR_NOT_BELOW_THRESHOLD
             );
         }
 
@@ -383,26 +383,26 @@ library ValidationLogic {
         if (!isCollateralEnabled) {
             return (
                 uint256(
-                    AaveErrors
+                    Errors
                         .CollateralManagerErrors
                         .COLLATERAL_CANNOT_BE_LIQUIDATED
                 ),
-                AaveErrors.LPCM_COLLATERAL_CANNOT_BE_LIQUIDATED
+                Errors.LPCM_COLLATERAL_CANNOT_BE_LIQUIDATED
             );
         }
 
         if (userStableDebt == 0 && userVariableDebt == 0) {
             return (
                 uint256(
-                    AaveErrors.CollateralManagerErrors.CURRRENCY_NOT_BORROWED
+                    Errors.CollateralManagerErrors.CURRRENCY_NOT_BORROWED
                 ),
-                AaveErrors.LPCM_SPECIFIED_CURRENCY_NOT_BORROWED_BY_USER
+                Errors.LPCM_SPECIFIED_CURRENCY_NOT_BORROWED_BY_USER
             );
         }
 
         return (
-            uint256(AaveErrors.CollateralManagerErrors.NO_ERROR),
-            AaveErrors.LPCM_NO_ERRORS
+            uint256(Errors.CollateralManagerErrors.NO_ERROR),
+            Errors.LPCM_NO_ERRORS
         );
     }
 
@@ -425,7 +425,7 @@ library ValidationLogic {
 
         require(
             healthFactor >= GenericLogic.HEALTH_FACTOR_LIQUIDATION_THRESHOLD,
-            AaveErrors.VL_TRANSFER_NOT_ALLOWED
+            Errors.VL_TRANSFER_NOT_ALLOWED
         );
     }
 }

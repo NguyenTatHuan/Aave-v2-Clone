@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../../protocol/libraries/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "../../openzeppelin/contracts/SafeMath.sol";
+import "../../openzeppelin/contracts/IERC20.sol";
+import "../../openzeppelin/contracts/SafeERC20.sol";
 import "../interfaces/IFlashLoanReceiver.sol";
 import "../../interfaces/ILendingPoolAddressesProvider.sol";
 import "../../interfaces/ILendingPool.sol";

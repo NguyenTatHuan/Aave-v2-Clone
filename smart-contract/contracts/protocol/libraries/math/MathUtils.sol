@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "./SafeMath.sol";
+import "../../../openzeppelin/contracts/SafeMath.sol";
 import "./WadRayMath.sol";
 
 library MathUtils {

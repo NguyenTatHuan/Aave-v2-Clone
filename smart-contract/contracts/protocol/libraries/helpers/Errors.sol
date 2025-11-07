@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-library AaveErrors {
+library Errors {
     string public constant CALLER_NOT_POOL_ADMIN = "33"; // 'The caller must be the pool admin'
     string public constant BORROW_ALLOWANCE_NOT_ENOUGH = "59"; // User borrows on behalf, but allowance are too small
 

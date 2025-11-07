@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../helpers/AaveErrors.sol";
+import "../helpers/Errors.sol";
 import "../types/DataTypes.sol";
 
 library ReserveConfiguration {
@@ -43,7 +43,7 @@ library ReserveConfiguration {
         DataTypes.ReserveConfigurationMap memory self,
         uint256 ltv
     ) internal pure {
-        require(ltv <= MAX_VALID_LTV, AaveErrors.RC_INVALID_LTV);
+        require(ltv <= MAX_VALID_LTV, Errors.RC_INVALID_LTV);
         self.data = (self.data & LTV_MASK) | ltv;
     }
 
@@ -59,7 +59,7 @@ library ReserveConfiguration {
     ) internal pure {
         require(
             threshold <= MAX_VALID_LIQUIDATION_THRESHOLD,
-            AaveErrors.RC_INVALID_LIQ_THRESHOLD
+            Errors.RC_INVALID_LIQ_THRESHOLD
         );
 
         self.data =
@@ -81,7 +81,7 @@ library ReserveConfiguration {
     ) internal pure {
         require(
             bonus <= MAX_VALID_LIQUIDATION_BONUS,
-            AaveErrors.RC_INVALID_LIQ_BONUS
+            Errors.RC_INVALID_LIQ_BONUS
         );
 
         self.data =
@@ -101,7 +101,7 @@ library ReserveConfiguration {
         DataTypes.ReserveConfigurationMap memory self,
         uint256 decimals
     ) internal pure {
-        require(decimals <= MAX_VALID_DECIMALS, AaveErrors.RC_INVALID_DECIMALS);
+        require(decimals <= MAX_VALID_DECIMALS, Errors.RC_INVALID_DECIMALS);
 
         self.data =
             (self.data & DECIMALS_MASK) |
@@ -182,7 +182,7 @@ library ReserveConfiguration {
     ) internal pure {
         require(
             reserveFactor <= MAX_VALID_RESERVE_FACTOR,
-            AaveErrors.RC_INVALID_RESERVE_FACTOR
+            Errors.RC_INVALID_RESERVE_FACTOR
         );
 
         self.data =

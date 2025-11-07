@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "../../../openzeppelin/contracts/SafeMath.sol";
+import "../../../openzeppelin/contracts/IERC20.sol";
+import "../../../openzeppelin/contracts/SafeERC20.sol";
 import "../math/WadRayMath.sol";
 import "../math/PercentageMath.sol";
 import "../math/MathUtils.sol";
-import "../helpers/AaveErrors.sol";
+import "../helpers/Errors.sol";
 import "../types/DataTypes.sol";
 import "../configuration/ReserveConfiguration.sol";
 import "../../../interfaces/IAToken.sol";
@@ -112,7 +112,7 @@ library ReserveLogic {
         result = result.rayMul(reserve.liquidityIndex);
         require(
             result <= type(uint128).max,
-            AaveErrors.RL_LIQUIDITY_INDEX_OVERFLOW
+            Errors.RL_LIQUIDITY_INDEX_OVERFLOW
         );
 
         reserve.liquidityIndex = uint128(result);
@@ -127,7 +127,7 @@ library ReserveLogic {
     ) external {
         require(
             reserve.aTokenAddress == address(0),
-            AaveErrors.RL_RESERVE_ALREADY_INITIALIZED
+            Errors.RL_RESERVE_ALREADY_INITIALIZED
         );
         reserve.liquidityIndex = uint128(WadRayMath.ray());
         reserve.variableBorrowIndex = uint128(WadRayMath.ray());
@@ -185,15 +185,15 @@ library ReserveLogic {
 
         require(
             vars.newLiquidityRate <= type(uint128).max,
-            AaveErrors.RL_LIQUIDITY_RATE_OVERFLOW
+            Errors.RL_LIQUIDITY_RATE_OVERFLOW
         );
         require(
             vars.newStableRate <= type(uint128).max,
-            AaveErrors.RL_STABLE_BORROW_RATE_OVERFLOW
+            Errors.RL_STABLE_BORROW_RATE_OVERFLOW
         );
         require(
             vars.newVariableRate <= type(uint128).max,
-            AaveErrors.RL_VARIABLE_BORROW_RATE_OVERFLOW
+            Errors.RL_VARIABLE_BORROW_RATE_OVERFLOW
         );
 
         reserve.currentLiquidityRate = uint128(vars.newLiquidityRate);
@@ -304,7 +304,7 @@ library ReserveLogic {
 
             require(
                 newLiquidityIndex <= type(uint128).max,
-                AaveErrors.RL_LIQUIDITY_INDEX_OVERFLOW
+                Errors.RL_LIQUIDITY_INDEX_OVERFLOW
             );
 
             reserve.liquidityIndex = uint128(newLiquidityIndex);
@@ -322,9 +322,9 @@ library ReserveLogic {
 
                 require(
                     newVariableBorrowIndex <= type(uint128).max,
-                    AaveErrors.RL_VARIABLE_BORROW_INDEX_OVERFLOW
+                    Errors.RL_VARIABLE_BORROW_INDEX_OVERFLOW
                 );
-                
+
                 reserve.variableBorrowIndex = uint128(newVariableBorrowIndex);
             }
         }
