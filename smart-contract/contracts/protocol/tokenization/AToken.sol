@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../interfaces/IAToken.sol";
-import "../interfaces/ILendingPool.sol";
-import "../protocol/libraries/aave-upgradeability/VersionedInitializable.sol";
-import "../protocol/libraries/math/WadRayMath.sol";
-import "../protocol/libraries/helpers/Errors.sol";
-import "../openzeppelin/contracts/SafeERC20.sol";
-import "../openzeppelin/contracts/SafeMath.sol";
+import "../../interfaces/IAToken.sol";
+import "../../interfaces/ILendingPool.sol";
+import "../libraries/aave-upgradeability/VersionedInitializable.sol";
+import "../libraries/math/WadRayMath.sol";
+import "../libraries/helpers/Errors.sol";
+import "../../openzeppelin/contracts/SafeERC20.sol";
+import "../../openzeppelin/contracts/SafeMath.sol";
 import "./IncentivizedERC20.sol";
 
 contract AToken is

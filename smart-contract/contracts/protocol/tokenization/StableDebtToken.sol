@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../interfaces/IStableDebtToken.sol";
-import "../interfaces/ILendingPool.sol";
-import "../openzeppelin/contracts/SafeMath.sol";
+import "../../interfaces/IStableDebtToken.sol";
+import "../../interfaces/ILendingPool.sol";
+import "../../openzeppelin/contracts/SafeMath.sol";
 import "./DebtTokenBase.sol";
-import "../protocol/libraries/math/WadRayMath.sol";
-import "../protocol/libraries/math/MathUtils.sol";
-import "../protocol/libraries/helpers/Errors.sol";
+import "../libraries/math/WadRayMath.sol";
+import "../libraries/math/MathUtils.sol";
+import "../libraries/helpers/Errors.sol";
 
 contract StableDebtToken is IStableDebtToken, DebtTokenBase {
     using WadRayMath for uint256;
@@ -83,13 +83,16 @@ contract StableDebtToken is IStableDebtToken, DebtTokenBase {
     ) public view virtual override returns (uint256) {
         uint256 accountBalance = super.balanceOf(account);
         uint256 stableRate = _usersStableRate[account];
+
         if (accountBalance == 0) {
             return 0;
         }
+
         uint256 cumulatedInterest = MathUtils.calculateCompoundedInterest(
             stableRate,
             _timestamps[account]
         );
+        
         return accountBalance.rayMul(cumulatedInterest);
     }
 

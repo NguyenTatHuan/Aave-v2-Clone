@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../openzeppelin/contracts/SafeMath.sol";
-import "../openzeppelin/contracts/IERC20.sol";
-import "../openzeppelin/contracts/Context.sol";
-import "../openzeppelin/contracts/IERC20Detailed.sol";
-import "../interfaces/IAaveIncentivesController.sol";
+import "../../openzeppelin/contracts/SafeMath.sol";
+import "../../openzeppelin/contracts/IERC20.sol";
+import "../../openzeppelin/contracts/Context.sol";
+import "../../openzeppelin/contracts/IERC20Detailed.sol";
+import "../../interfaces/IAaveIncentivesController.sol";
 
 abstract contract IncentivizedERC20 is Context, IERC20, IERC20Detailed {
     using SafeMath for uint256;

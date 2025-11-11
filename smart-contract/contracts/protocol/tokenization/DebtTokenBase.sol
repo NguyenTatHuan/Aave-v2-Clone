@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "../interfaces/ICreditDelegationToken.sol";
-import "../interfaces/ILendingPool.sol";
-import "../openzeppelin/contracts/SafeMath.sol";
+import "../../interfaces/ICreditDelegationToken.sol";
+import "../../interfaces/ILendingPool.sol";
+import "../../openzeppelin/contracts/SafeMath.sol";
 import "./IncentivizedERC20.sol";
-import "../protocol/libraries/aave-upgradeability/VersionedInitializable.sol";
-import "../protocol/libraries/helpers/Errors.sol";
+import "../libraries/aave-upgradeability/VersionedInitializable.sol";
+import "../libraries/helpers/Errors.sol";
 
 abstract contract DebtTokenBase is
     ICreditDelegationToken,
